@@ -1,1 +1,3 @@
-console.log("Hola!");
+const saludar = () => {
+    console.log("Hola!");
+}
