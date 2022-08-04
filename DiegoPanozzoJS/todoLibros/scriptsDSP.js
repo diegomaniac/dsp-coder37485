@@ -1,4 +1,4 @@
-/* ** Desafio 02/08/22 ** */
+/* ** Segunda Entregal del Proyecto Final 09/08 ** */
 // Mi proyecto consistira en un ecomerce destinado a libros //
 
 /* Definición del objeto */
@@ -11,7 +11,7 @@ class libro {
     }
 }
 
-/* Creación del carrito, será un array de objetos */
+/* Creación del carrito y/o su obtencion del localStorage segun corresponda */
 let carritoLibros = JSON.parse(localStorage.getItem("carrito")) ?? {items: 0, total: 0, particulares:[]};
 let carritoID = carritoLibros.particulares.length ?? -1;
 document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
@@ -31,7 +31,7 @@ if (carritoID != -1) {
     }
 }
 
-/* Creación de los objetos simulados */
+/* Creación de los objetos simulados del back */
 const libro01 = new libro('00001', "El nombre del viento", "Patrick Rothfuss", 0, 5000, 5, 2500, 10, 2000, 12, 1350, 500);
 const libro02 = new libro('00002', "El temor de un hombre sabio", "Patrick Rothfuss",  2, 5000, 3, 2500, 8, 2000, 10, 1350, 500);
 const libro03 = new libro('00003', "La Música del Silencio ", "Patrick Rothfuss",  3, 5000, 2, 2500, 6, 2000, 5, 1350, 500);
@@ -39,6 +39,7 @@ const libro03 = new libro('00003', "La Música del Silencio ", "Patrick Rothfuss
 let cards = "";
 let catalogo = [libro01, libro02, libro03];
 
+/* Modificación del Dom| Creación de las cards con los libros */
 document.getElementById("seccionCards").innerHTML = `
 <div class="container px-4 px-lg-5 mt-5">
 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">`;
@@ -72,6 +73,7 @@ document.getElementById("seccionCards").innerHTML = `
 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">` + cards + `
 </div></div>`;
 
+/* Funciones para agregar y quitar elementos del carrito, modificando Dom y guardando cambios en el localStorage */
 function agregarAlCarrito (isbn, titulo, formato, precio) {
     carritoLibros.items += 1;
     carritoID += 1;
