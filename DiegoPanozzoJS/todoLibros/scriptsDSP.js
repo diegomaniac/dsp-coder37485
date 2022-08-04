@@ -12,8 +12,24 @@ class libro {
 }
 
 /* Creación del carrito, será un array de objetos */
-let carritoLibros = {items: 0, total: 0, particulares:[]};
-let carritoID = -1;
+let carritoLibros = JSON.parse(localStorage.getItem("carrito")) ?? {items: 0, total: 0, particulares:[]};
+let carritoID = carritoLibros.particulares.length ?? -1;
+document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
+if (carritoID != -1) {
+    for (let i= 0; i < carritoID; i++) {
+        document.getElementById("contenidoCarrito").innerHTML += `
+        <li class="list-group-item d-flex justify-content-between align-items-start" id="${carritoLibros.particulares[i][0]}">
+        <div class="ms-2 me-auto">
+            <div class="fw-bold">${carritoLibros.particulares[i][2]}</div>
+            ${carritoLibros.particulares[i][3]} - $ ${carritoLibros.particulares[i][4]}.-
+        </div>
+        <span class="badge bg-primary rounded-pill" id="${'pre'+carritoLibros.particulares[i][0]}">
+            <a id="${'del'+carritoLibros.particulares[i][0]}" onclick='eliminarDelCarrito("${carritoLibros.particulares[i][0]}")'>x</a>
+        </span>
+        </li>
+        `;
+    }
+}
 
 /* Creación de los objetos simulados */
 const libro01 = new libro('00001', "El nombre del viento", "Patrick Rothfuss", 0, 5000, 5, 2500, 10, 2000, 12, 1350, 500);
@@ -73,7 +89,8 @@ function agregarAlCarrito (isbn, titulo, formato, precio) {
     </span>
     </li>
     `;
-    alert("Has agregado "+ carritoLibros.particulares[carritoID][2] +" en formato "+ carritoLibros.particulares[carritoID][3] +" a tu carrito.");
+    localStorage.setItem("carrito", JSON.stringify(carritoLibros));
+    alert("Has agregado "+ carritoLibros.particulares[carritoID-1][2] +" en formato "+ carritoLibros.particulares[carritoID-1][3] +" a tu carrito.");
 }
 
 function eliminarDelCarrito(carritoID) {
@@ -82,8 +99,9 @@ function eliminarDelCarrito(carritoID) {
         if (carritoLibros.particulares[i][0] == carritoID) {
             carritoLibros.items -= 1;
             carritoLibros.total -= parseInt(carritoLibros.particulares[i][4]);
-            carritoLibros.particulares.splice(carritoID, 1);
+            carritoLibros.particulares.splice(i, 1);
             document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
+            localStorage.setItem("carrito", JSON.stringify(carritoLibros));
         }
     }        
 }
