@@ -92,18 +92,69 @@ function agregarAlCarrito (isbn, titulo, formato, precio) {
     </li>
     `;
     localStorage.setItem("carrito", JSON.stringify(carritoLibros));
-    alert("Has agregado "+ carritoLibros.particulares[carritoID-1][2] +" en formato "+ carritoLibros.particulares[carritoID-1][3] +" a tu carrito.");
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+    Toast.fire({
+        icon: 'success',
+        title: "Has agregado "+ carritoLibros.particulares[carritoID-1][2] +" en formato "+ carritoLibros.particulares[carritoID-1][3] +" a tu carrito."
+    })
 }
 
 function eliminarDelCarrito(carritoID) {
     document.getElementById(carritoID).remove();
     for (let i = 0; i < carritoLibros.particulares.length; i++) {
-        if (carritoLibros.particulares[i][0] == carritoID) {
-            carritoLibros.items -= 1;
-            carritoLibros.total -= parseInt(carritoLibros.particulares[i][4]);
-            carritoLibros.particulares.splice(i, 1);
-            document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
-            localStorage.setItem("carrito", JSON.stringify(carritoLibros));
-        }
-    }        
+        carritoLibros.particulares[i][0] == carritoID ? (
+            carritoLibros.items -= 1,
+            carritoLibros.total -= parseInt(carritoLibros.particulares[i][4]),
+            carritoLibros.particulares.splice(i, 1),
+            document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total,
+            localStorage.setItem("carrito", JSON.stringify(carritoLibros)))
+        : 
+        console.log("este mensaje no debe verse, solo lo pongo para usar el operador ternario porque no tengo un uso real en el codigo");
+}}        
+
+function vaciarCarrito() {
+    document.getElementById("contenidoCarrito").innerHTML = "";
+    for (let i = 0; i < carritoLibros.particulares.length; i++) {
+        carritoLibros.items = 0;
+        carritoLibros.total = 0;
+        carritoLibros.particulares = [];
+        document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
+        localStorage.setItem("carrito", JSON.stringify(carritoLibros));
+    }
 }
+
+document.getElementById("continuarCompra").addEventListener("click", function() {
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+    })
+    swalWithBootstrapButtons.fire({
+        title: 'Continuar al pago',
+        text: "Estamos direccionando tu compra para su pago.",
+        showCancelButton: true,
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            swalWithBootstrapButtons.fire(
+            '¡Muchas gracias por elegirnos!',
+            'Estamos direccionando tu compra para su pago',
+            'success'
+        )
+        vaciarCarrito()
+    }}
+,false)})
