@@ -73,6 +73,22 @@ document.getElementById("seccionCards").innerHTML = `
 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">` + cards + `
 </div></div>`;
 
+/* Función con numeros aleatorios */
+function generarAleatorio(maxLimit) {
+    let rand = Math.floor(Math.random() * maxLimit);
+    return rand;
+}
+
+/* Fetch con Api de Frases */
+fetch("https://type.fit/api/quotes")
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        let i = generarAleatorio(data.length-1);
+        document.getElementById("frase").innerHTML = `"${data[i].text}" - ${data[i].author}`;
+    });
+
 /* Funciones para agregar y quitar elementos del carrito, modificando Dom y guardando cambios en el localStorage */
 function agregarAlCarrito (isbn, titulo, formato, precio) {
     carritoLibros.items += 1;

@@ -2,3 +2,11 @@
     max-height: 200px !important;
     height: 200px !important;
 }
+
+#frase {
+    color: rgba(255,127,80,0.5);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    top: 48px;
+}
