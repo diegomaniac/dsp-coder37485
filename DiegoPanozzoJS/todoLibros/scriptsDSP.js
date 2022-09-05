@@ -24,7 +24,7 @@ if (carritoID != -1) {
             ${carritoLibros.particulares[i][3]} - $ ${carritoLibros.particulares[i][4]}.-
         </div>
         <span class="badge bg-primary rounded-pill" id="${'pre'+carritoLibros.particulares[i][0]}">
-            <a id="${'del'+carritoLibros.particulares[i][0]}" onclick='eliminarDelCarrito("${carritoLibros.particulares[i][0]}")'>x</a>
+            <a id="${'del'+carritoLibros.particulares[i][0]}" onclick='eliminarDelCarrito("${carritoLibros.particulares[i][0]}", "${carritoLibros.particulares[i][1]}", "${carritoLibros.particulares[i][2]}", "${carritoLibros.particulares[i][3]}", "${carritoLibros.particulares[i][4]}")'>x</a>
         </span>
         </li>
         `;
@@ -32,6 +32,7 @@ if (carritoID != -1) {
 }
 
 /* Creación de los objetos simulados del back */
+const keyAutor = {apellido: "Rothfuss", nombre: "Patrick", autorID: 7854, picture: "img/patrick.png"};
 const libro01 = new libro('00001', "El nombre del viento", "Patrick Rothfuss", 0, 5000, 5, 2500, 10, 2000, 12, 1350, 500);
 const libro02 = new libro('00002', "El temor de un hombre sabio", "Patrick Rothfuss",  2, 5000, 3, 2500, 8, 2000, 10, 1350, 500);
 const libro03 = new libro('00003', "La Música del Silencio ", "Patrick Rothfuss",  3, 5000, 2, 2500, 6, 2000, 5, 1350, 500);
@@ -89,24 +90,44 @@ fetch("https://type.fit/api/quotes")
         document.getElementById("frase").innerHTML = `"${data[i].text}" - ${data[i].author}`;
     });
 
+/* Funcion para comparar si es el mismo libro y devuelve posición si lo es, -1 si no está */
+function esMismoLibro (isbn, titulo, formato, precio) {
+    for (let i = 0; i < carritoLibros.particulares.length; i++) {
+        if (carritoLibros.particulares[i][1] == isbn) {
+            if (carritoLibros.particulares[i][2] == titulo) {
+                if (carritoLibros.particulares[i][3] == formato) {
+                    if (carritoLibros.particulares[i][4] == precio) {
+                        return i;
+                    }
+                }
+            }
+        }
+    }
+    return -1;
+}
+
 /* Funciones para agregar y quitar elementos del carrito, modificando Dom y guardando cambios en el localStorage */
 function agregarAlCarrito (isbn, titulo, formato, precio) {
     carritoLibros.items += 1;
-    carritoID += 1;
     carritoLibros.total += parseInt(precio);
     document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
-    carritoLibros.particulares.push([carritoID, isbn, titulo, formato, precio]);
-    document.getElementById("contenidoCarrito").innerHTML += `
-    <li class="list-group-item d-flex justify-content-between align-items-start" id="${carritoID}">
-    <div class="ms-2 me-auto">
-        <div class="fw-bold">${titulo}</div>
-        ${formato} - $ ${precio}.-
-    </div>
-    <span class="badge bg-primary rounded-pill" id="${'pre'+carritoID}">
-        <a id="${'del'+carritoID}" onclick='eliminarDelCarrito("${carritoID}")'>x</a>
-    </span>
-    </li>
-    `;
+    if (esMismoLibro(isbn, titulo, formato, precio) != -1) {
+        carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][5] += 1;
+    } else {
+        carritoID += 1;
+        carritoLibros.particulares.push([carritoID, isbn, titulo, formato, precio, 1]);
+        document.getElementById("contenidoCarrito").innerHTML += `
+        <li class="list-group-item d-flex justify-content-between align-items-start" id="${carritoID}">
+        <div class="ms-2 me-auto">
+            <div class="fw-bold">${titulo}</div>
+            ${formato} - $ ${precio}.-
+        </div>
+        <span class="badge bg-primary rounded-pill" id="${'pre'+carritoID}">
+            <a id="${'del'+carritoID}" onclick='eliminarDelCarrito("${carritoID}")'>x</a>
+        </span>
+        </li>
+        `;
+    }
     localStorage.setItem("carrito", JSON.stringify(carritoLibros));
     const Toast = Swal.mixin({
         toast: true,
@@ -125,18 +146,27 @@ function agregarAlCarrito (isbn, titulo, formato, precio) {
     })
 }
 
-function eliminarDelCarrito(carritoID) {
-    document.getElementById(carritoID).remove();
-    for (let i = 0; i < carritoLibros.particulares.length; i++) {
-        carritoLibros.particulares[i][0] == carritoID ? (
-            carritoLibros.items -= 1,
-            carritoLibros.total -= parseInt(carritoLibros.particulares[i][4]),
-            carritoLibros.particulares.splice(i, 1),
-            document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total,
-            localStorage.setItem("carrito", JSON.stringify(carritoLibros)))
-        : 
-        console.log("este mensaje no debe verse, solo lo pongo para usar el operador ternario porque no tengo un uso real en el codigo");
-}}        
+function eliminarDelCarrito(carritoID, isbn, titulo, formato, precio) {
+    if (carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][5] > 1) {
+        carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][5] -= 1;
+        carritoLibros.items -= 1;
+        carritoLibros.total -= parseInt(carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]);
+        document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total,
+        localStorage.setItem("carrito", JSON.stringify(carritoLibros));
+    } else {
+        document.getElementById(carritoID).remove();
+        for (let i = 0; i < carritoLibros.particulares.length; i++) {
+            carritoLibros.particulares[i][0] == carritoID ? (
+                carritoLibros.items -= 1,
+                carritoLibros.total -= parseInt(carritoLibros.particulares[i][4]),
+                carritoLibros.particulares.splice(i, 1),
+                document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total,
+                localStorage.setItem("carrito", JSON.stringify(carritoLibros)))
+            : 
+            console.log("este mensaje no debe verse, solo lo pongo para usar el operador ternario porque no tengo un uso real en el codigo");
+        }
+    }
+}        
 
 function vaciarCarrito() {
     document.getElementById("contenidoCarrito").innerHTML = "";
