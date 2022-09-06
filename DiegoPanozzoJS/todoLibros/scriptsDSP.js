@@ -13,18 +13,17 @@ class libro {
 
 /* Creación del carrito y/o su obtencion del localStorage segun corresponda */
 let carritoLibros = JSON.parse(localStorage.getItem("carrito")) ?? {items: 0, total: 0, particulares:[]};
-let carritoID = carritoLibros.particulares.length ?? -1;
 document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
-if (carritoID != -1) {
-    for (let i= 0; i < carritoID; i++) {
+if (carritoLibros.particulares.length != 0) {
+    for (let i= 0; i < carritoLibros.particulares.length; i++) {
         document.getElementById("contenidoCarrito").innerHTML += `
-        <li class="list-group-item d-flex justify-content-between align-items-start" id="${carritoLibros.particulares[i][0]}">
-        <div class="ms-2 me-auto">
-            <div class="fw-bold">${carritoLibros.particulares[i][2]}</div>
-            ${carritoLibros.particulares[i][3]} - $ ${carritoLibros.particulares[i][4]}.-
+        <li class="list-group-item d-flex justify-content-between align-items-start" id="${i}">
+        <div class="ms-2 me-auto" id= artN${i}>
+            <div class="fw-bold">${carritoLibros.particulares[i][1]}</div>
+            ${carritoLibros.particulares[i][2]} - $ ${carritoLibros.particulares[i][3]}.- Cant: ${carritoLibros.particulares[i][4]} - Total:$ ${carritoLibros.particulares[i][3]*carritoLibros.particulares[i][4]}
         </div>
-        <span class="badge bg-primary rounded-pill" id="${'pre'+carritoLibros.particulares[i][0]}">
-            <a id="${'del'+carritoLibros.particulares[i][0]}" onclick='eliminarDelCarrito("${carritoLibros.particulares[i][0]}", "${carritoLibros.particulares[i][1]}", "${carritoLibros.particulares[i][2]}", "${carritoLibros.particulares[i][3]}", "${carritoLibros.particulares[i][4]}")'>x</a>
+        <span class="badge bg-primary rounded-pill" id= pre${i}>
+            <a id= del${i} onclick='eliminarDelCarrito(${carritoLibros.particulares[i][0]}, ${carritoLibros.particulares[i][1]}, ${carritoLibros.particulares[i][2]}, ${carritoLibros.particulares[i][3]})'>x</a>
         </span>
         </li>
         `;
@@ -57,11 +56,11 @@ catalogo.forEach((card) => {
                     <!-- Product name -->
                     <h5 class="fw-bolder">${card.autor} - ${card.titulo}</h5>
                     <!-- Product price -->
-                    <button id="${card.isbn + card.formatosStocskPrecios[0][0]}" onclick='agregarAlCarrito("${card.isbn}", "${card.titulo}", "${card.formatosStocskPrecios[0][0]}", "${card.formatosStocskPrecios[0][2]}")' data-id="${card.isbn + card.formatosStocskPrecios[0][0]}"> ${card.formatosStocskPrecios[0][0]} - $ ${card.formatosStocskPrecios[0][2]} </button><br>
-                    <button id="${card.isbn + card.formatosStocskPrecios[1][0]}" onclick='agregarAlCarrito("${card.isbn}", "${card.titulo}", "${card.formatosStocskPrecios[1][0]}", "${card.formatosStocskPrecios[1][2]}")' data-id="${card.isbn + card.formatosStocskPrecios[1][0]}">${card.formatosStocskPrecios[1][0]} - $ ${card.formatosStocskPrecios[1][2]} </button><br>
-                    <button id="${card.isbn + card.formatosStocskPrecios[2][0]}" onclick='agregarAlCarrito("${card.isbn}", "${card.titulo}", "${card.formatosStocskPrecios[2][0]}", "${card.formatosStocskPrecios[2][2]}")' data-id="${card.isbn + card.formatosStocskPrecios[2][0]}">${card.formatosStocskPrecios[2][0]} - $ ${card.formatosStocskPrecios[2][2]} </button><br>
-                    <button id="${card.isbn + card.formatosStocskPrecios[3][0]}" onclick='agregarAlCarrito("${card.isbn}", "${card.titulo}", "${card.formatosStocskPrecios[3][0]}", "${card.formatosStocskPrecios[3][2]}")' data-id="${card.isbn + card.formatosStocskPrecios[3][0]}">${card.formatosStocskPrecios[3][0]} - $ ${card.formatosStocskPrecios[3][2]} </button><br>
-                    <button id="${card.isbn + card.formatosStocskPrecios[4][0]}" onclick='agregarAlCarrito("${card.isbn}", "${card.titulo}", "${card.formatosStocskPrecios[4][0]}", "${card.formatosStocskPrecios[4][2]}")' data-id="${card.isbn + card.formatosStocskPrecios[4][0]}">${card.formatosStocskPrecios[4][0]} - $ ${card.formatosStocskPrecios[4][2]} </button>
+                    <button id="${card.isbn + card.formatosStocskPrecios[0][0]}" onclick='agregarAlCarrito(${card.isbn}, "${card.titulo}", "${card.formatosStocskPrecios[0][0]}", ${card.formatosStocskPrecios[0][2]})' data-id="${card.isbn + card.formatosStocskPrecios[0][0]}">${card.formatosStocskPrecios[0][0]} - $ ${card.formatosStocskPrecios[0][2]} </button><br>
+                    <button id="${card.isbn + card.formatosStocskPrecios[1][0]}" onclick='agregarAlCarrito(${card.isbn}, "${card.titulo}", "${card.formatosStocskPrecios[1][0]}", ${card.formatosStocskPrecios[1][2]})' data-id="${card.isbn + card.formatosStocskPrecios[1][0]}">${card.formatosStocskPrecios[1][0]} - $ ${card.formatosStocskPrecios[1][2]} </button><br>
+                    <button id="${card.isbn + card.formatosStocskPrecios[2][0]}" onclick='agregarAlCarrito(${card.isbn}, "${card.titulo}", "${card.formatosStocskPrecios[2][0]}", ${card.formatosStocskPrecios[2][2]})' data-id="${card.isbn + card.formatosStocskPrecios[2][0]}">${card.formatosStocskPrecios[2][0]} - $ ${card.formatosStocskPrecios[2][2]} </button><br>
+                    <button id="${card.isbn + card.formatosStocskPrecios[3][0]}" onclick='agregarAlCarrito(${card.isbn}, "${card.titulo}", "${card.formatosStocskPrecios[3][0]}", ${card.formatosStocskPrecios[3][2]})' data-id="${card.isbn + card.formatosStocskPrecios[3][0]}">${card.formatosStocskPrecios[3][0]} - $ ${card.formatosStocskPrecios[3][2]} </button><br>
+                    <button id="${card.isbn + card.formatosStocskPrecios[4][0]}" onclick='agregarAlCarrito(${card.isbn}, "${card.titulo}", "${card.formatosStocskPrecios[4][0]}", ${card.formatosStocskPrecios[4][2]})' data-id="${card.isbn + card.formatosStocskPrecios[4][0]}">${card.formatosStocskPrecios[4][0]} - $ ${card.formatosStocskPrecios[4][2]} </button>
                     </div>
                 </div>
             </div>
@@ -93,10 +92,10 @@ fetch("https://type.fit/api/quotes")
 /* Funcion para comparar si es el mismo libro y devuelve posición si lo es, -1 si no está */
 function esMismoLibro (isbn, titulo, formato, precio) {
     for (let i = 0; i < carritoLibros.particulares.length; i++) {
-        if (carritoLibros.particulares[i][1] == isbn) {
-            if (carritoLibros.particulares[i][2] == titulo) {
-                if (carritoLibros.particulares[i][3] == formato) {
-                    if (carritoLibros.particulares[i][4] == precio) {
+        if (carritoLibros.particulares[i][0] == isbn) {
+            if (carritoLibros.particulares[i][1] == titulo) {
+                if (carritoLibros.particulares[i][2] == formato) {
+                    if (carritoLibros.particulares[i][3] == precio) {
                         return i;
                     }
                 }
@@ -112,18 +111,21 @@ function agregarAlCarrito (isbn, titulo, formato, precio) {
     carritoLibros.total += parseInt(precio);
     document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
     if (esMismoLibro(isbn, titulo, formato, precio) != -1) {
-        carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][5] += 1;
+        carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4] += 1;
+        document.getElementById("artN" + esMismoLibro(isbn, titulo, formato, precio)).innerHTML = `
+        <div class="fw-bold">${titulo}</div>
+        ${formato} - $ ${precio}.- Cant: ${carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]} - Total:$ ${precio*carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]}
+        `;
     } else {
-        carritoID += 1;
-        carritoLibros.particulares.push([carritoID, isbn, titulo, formato, precio, 1]);
+        carritoLibros.particulares.push([isbn, titulo, formato, precio, 1]);
         document.getElementById("contenidoCarrito").innerHTML += `
-        <li class="list-group-item d-flex justify-content-between align-items-start" id="${carritoID}">
-        <div class="ms-2 me-auto">
+        <li class="list-group-item d-flex justify-content-between align-items-start" id="${esMismoLibro(isbn, titulo, formato, precio)}">
+        <div class="ms-2 me-auto" id= artN${esMismoLibro(isbn, titulo, formato, precio)}>
             <div class="fw-bold">${titulo}</div>
-            ${formato} - $ ${precio}.-
+            ${formato} - $ ${precio}.- Cant: ${carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]} - Total:$ ${precio*carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]}
         </div>
-        <span class="badge bg-primary rounded-pill" id="${'pre'+carritoID}">
-            <a id="${'del'+carritoID}" onclick='eliminarDelCarrito("${carritoID}")'>x</a>
+        <span class="badge bg-primary rounded-pill" id= pre${esMismoLibro(isbn, titulo, formato, precio)}>
+            <a id= del${esMismoLibro(isbn, titulo, formato, precio)} onclick='eliminarDelCarrito("${isbn}", "${titulo}", "${formato}", "${precio}")'>x</a>
         </span>
         </li>
         `;
@@ -142,31 +144,29 @@ function agregarAlCarrito (isbn, titulo, formato, precio) {
     })
     Toast.fire({
         icon: 'success',
-        title: "Has agregado "+ carritoLibros.particulares[carritoID-1][2] +" en formato "+ carritoLibros.particulares[carritoID-1][3] +" a tu carrito."
+        title: "Has agregado "+ carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][1] +" en formato "+ carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][2] +" a tu carrito."
     })
 }
 
-function eliminarDelCarrito(carritoID, isbn, titulo, formato, precio) {
-    if (carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][5] > 1) {
-        carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][5] -= 1;
+function eliminarDelCarrito(isbn, titulo, formato, precio) {
+    if (carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4] > 1) {
+        carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4] -= 1;
         carritoLibros.items -= 1;
-        carritoLibros.total -= parseInt(carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]);
-        document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total,
-        localStorage.setItem("carrito", JSON.stringify(carritoLibros));
+        carritoLibros.total -= parseInt(carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][3]);
+        document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
+        document.getElementById("artN" + esMismoLibro(isbn, titulo, formato, precio)).innerHTML = `
+        <div class="fw-bold">${titulo}</div>
+        ${formato} - $ ${precio}.- Cant: ${carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]} - Total:$ ${precio*carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]}
+        `;
     } else {
-        document.getElementById(carritoID).remove();
-        for (let i = 0; i < carritoLibros.particulares.length; i++) {
-            carritoLibros.particulares[i][0] == carritoID ? (
-                carritoLibros.items -= 1,
-                carritoLibros.total -= parseInt(carritoLibros.particulares[i][4]),
-                carritoLibros.particulares.splice(i, 1),
-                document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total,
-                localStorage.setItem("carrito", JSON.stringify(carritoLibros)))
-            : 
-            console.log("este mensaje no debe verse, solo lo pongo para usar el operador ternario porque no tengo un uso real en el codigo");
-        }
+        document.getElementById(esMismoLibro(isbn, titulo, formato, precio)).remove();
+        carritoLibros.items -= 1,
+        carritoLibros.total -= parseInt(carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][3]),
+        carritoLibros.particulares.splice(esMismoLibro(isbn, titulo, formato, precio), 1),
+        document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
     }
-}        
+    localStorage.setItem("carrito", JSON.stringify(carritoLibros));
+}      
 
 function vaciarCarrito() {
     document.getElementById("contenidoCarrito").innerHTML = "";
