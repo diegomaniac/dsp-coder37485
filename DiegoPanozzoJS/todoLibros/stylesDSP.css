@@ -1,6 +1,6 @@
 .pageLogo {
     max-height: 200px !important;
-    height: 200px !important;
+    height: 100px !important;
 }
 
 #frase {
@@ -10,3 +10,51 @@
     justify-content: center;
     top: 48px;
 }
+
+.boton {
+    min-width: 80%;
+    margin: 2px;
+    margin-bottom: 8px;
+    border-radius: 2px;
+    border: 0;
+    outline: gray solid 1px;
+    background-color: white;
+}
+.boton:hover {
+    outline: gray solid 2px;
+    background-color: #dadada;
+    transition: .5s;
+}
+.boton:active {
+    outline: gray solid 2px;
+}
+
+
+
+.fw-bolder {
+    height: 60px;
+}
+
+.autorPic{
+    position: relative;
+    display: inline;
+}
+
+.autor {
+    position: relative;
+    display: inline;
+}
+
+.mt-5 {
+    margin-top: -5rem !important;
+}
+
+a {
+    text-decoration: none;
+}
+
+.badge {
+    cursor: pointer;
+    background-color: rgb(145, 145, 145) !important;
+}
+.badge:hover {background-color: rgb(92, 92, 92) !important;}

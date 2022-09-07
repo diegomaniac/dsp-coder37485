@@ -7,43 +7,48 @@ class libro {
         this.isbn = isbn;
         this.titulo = titulo;
         this.autor = autor;
-        this.formatosStocskPrecios = [["Colección", stockColeccion, precioColeccion], ["Tapa Dura", stockTDura, precioTDura], ["Tapa Blanda", stockTBlanda, precioTBlanda], ["Bolsillo", stockBolsillo, precioTBlanda], ["Digital", -1, precioDigital]];
+        this.formatosStocskPrecios = [["Colección", stockColeccion, precioColeccion], ["Tapa Dura", stockTDura, precioTDura], ["Tapa Blanda", stockTBlanda, precioTBlanda], ["Bolsillo", stockBolsillo, precioBolsillo], ["Digital", -1, precioDigital]];
     }
 }
 
 /* Creación del carrito y/o su obtencion del localStorage segun corresponda */
 let carritoLibros = JSON.parse(localStorage.getItem("carrito")) ?? {items: 0, total: 0, particulares:[]};
-document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
-if (carritoLibros.particulares.length != 0) {
-    for (let i= 0; i < carritoLibros.particulares.length; i++) {
-        document.getElementById("contenidoCarrito").innerHTML += `
-        <li class="list-group-item d-flex justify-content-between align-items-start" id="${i}">
-        <div class="ms-2 me-auto" id= artN${i}>
-            <div class="fw-bold">${carritoLibros.particulares[i][1]}</div>
-            ${carritoLibros.particulares[i][2]} - $ ${carritoLibros.particulares[i][3]}.- Cant: ${carritoLibros.particulares[i][4]} - Total:$ ${carritoLibros.particulares[i][3]*carritoLibros.particulares[i][4]}
-        </div>
-        <span class="badge bg-primary rounded-pill" id= pre${i}>
-            <a id= del${i} onclick='eliminarDelCarrito(${carritoLibros.particulares[i][0]}, ${carritoLibros.particulares[i][1]}, ${carritoLibros.particulares[i][2]}, ${carritoLibros.particulares[i][3]})'>x</a>
-        </span>
-        </li>
-        `;
+
+function armarCarrito() {
+    document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
+    if (carritoLibros.particulares.length != 0) {
+        document.getElementById("contenidoCarrito").innerHTML = ""
+        for (let i= 0; i < carritoLibros.particulares.length; i++) {
+            document.getElementById("contenidoCarrito").innerHTML += `
+            <li class="list-group-item d-flex justify-content-between align-items-start" id="artN${i}">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">${carritoLibros.particulares[i][1]}</div>
+                    ${carritoLibros.particulares[i][2]} - $ ${carritoLibros.particulares[i][3]}.- Cant: ${carritoLibros.particulares[i][4]} - Total:$ ${carritoLibros.particulares[i][3]*carritoLibros.particulares[i][4]}
+                </div>
+                <a id="delArtN${i}" onclick="eliminarDelCarrito('${carritoLibros.particulares[i][0]}', '${carritoLibros.particulares[i][1]}', '${carritoLibros.particulares[i][2]}', '${carritoLibros.particulares[i][3]}')">
+                    <span class="badge bg-primary rounded-pill">
+                        X
+                    </span>
+                </a>
+            </li>
+            `;
+        }
     }
 }
 
+armarCarrito();
+
 /* Creación de los objetos simulados del back */
-const keyAutor = {apellido: "Rothfuss", nombre: "Patrick", autorID: 7854, picture: "img/patrick.png"};
-const libro01 = new libro('00001', "El nombre del viento", "Patrick Rothfuss", 0, 5000, 5, 2500, 10, 2000, 12, 1350, 500);
-const libro02 = new libro('00002', "El temor de un hombre sabio", "Patrick Rothfuss",  2, 5000, 3, 2500, 8, 2000, 10, 1350, 500);
-const libro03 = new libro('00003', "La Música del Silencio ", "Patrick Rothfuss",  3, 5000, 2, 2500, 6, 2000, 5, 1350, 500);
+const keyAutor = {apellido: "Rothfuss", nombre: "Patrick", autorID: 7854, picture: 'patrick'};
+const libro01 = new libro("00001", "El nombre del viento", "Patrick Rothfuss", 0, 5000, 5, 2500, 10, 2000, 12, 1350, 500);
+const libro02 = new libro("00002", "El temor de un hombre sabio", "Patrick Rothfuss",  2, 5000, 3, 2500, 8, 2000, 10, 1350, 500);
+const libro03 = new libro("00003", "La Música del Silencio", "Patrick Rothfuss",  3, 5000, 2, 2500, 6, 2000, 5, 1350, 500);
 
 let cards = "";
 let catalogo = [libro01, libro02, libro03];
 
 /* Modificación del Dom| Creación de las cards con los libros */
-document.getElementById("seccionCards").innerHTML = `
-<div class="container px-4 px-lg-5 mt-5">
-<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">`;
-
+let cardI=0;
 catalogo.forEach((card) => {
     cards += `
         <div class="col mb-5">
@@ -54,22 +59,27 @@ catalogo.forEach((card) => {
                 <div class="card-body p-4">
                     <div class="text-center">
                     <!-- Product name -->
-                    <h5 class="fw-bolder">${card.autor} - ${card.titulo}</h5>
+                    <h5 class="fw-bolder">${card.titulo}</h5>
                     <!-- Product price -->
-                    <button id="${card.isbn + card.formatosStocskPrecios[0][0]}" onclick='agregarAlCarrito(${card.isbn}, "${card.titulo}", "${card.formatosStocskPrecios[0][0]}", ${card.formatosStocskPrecios[0][2]})' data-id="${card.isbn + card.formatosStocskPrecios[0][0]}">${card.formatosStocskPrecios[0][0]} - $ ${card.formatosStocskPrecios[0][2]} </button><br>
-                    <button id="${card.isbn + card.formatosStocskPrecios[1][0]}" onclick='agregarAlCarrito(${card.isbn}, "${card.titulo}", "${card.formatosStocskPrecios[1][0]}", ${card.formatosStocskPrecios[1][2]})' data-id="${card.isbn + card.formatosStocskPrecios[1][0]}">${card.formatosStocskPrecios[1][0]} - $ ${card.formatosStocskPrecios[1][2]} </button><br>
-                    <button id="${card.isbn + card.formatosStocskPrecios[2][0]}" onclick='agregarAlCarrito(${card.isbn}, "${card.titulo}", "${card.formatosStocskPrecios[2][0]}", ${card.formatosStocskPrecios[2][2]})' data-id="${card.isbn + card.formatosStocskPrecios[2][0]}">${card.formatosStocskPrecios[2][0]} - $ ${card.formatosStocskPrecios[2][2]} </button><br>
-                    <button id="${card.isbn + card.formatosStocskPrecios[3][0]}" onclick='agregarAlCarrito(${card.isbn}, "${card.titulo}", "${card.formatosStocskPrecios[3][0]}", ${card.formatosStocskPrecios[3][2]})' data-id="${card.isbn + card.formatosStocskPrecios[3][0]}">${card.formatosStocskPrecios[3][0]} - $ ${card.formatosStocskPrecios[3][2]} </button><br>
-                    <button id="${card.isbn + card.formatosStocskPrecios[4][0]}" onclick='agregarAlCarrito(${card.isbn}, "${card.titulo}", "${card.formatosStocskPrecios[4][0]}", ${card.formatosStocskPrecios[4][2]})' data-id="${card.isbn + card.formatosStocskPrecios[4][0]}">${card.formatosStocskPrecios[4][0]} - $ ${card.formatosStocskPrecios[4][2]} </button>
+                    <button class="boton" id="agrega${cardI}${card.formatosStocskPrecios[0][0]}" onclick="agregarAlCarrito('${card.isbn}', '${card.titulo}', '${card.formatosStocskPrecios[0][0]}', '${card.formatosStocskPrecios[0][2]}')" data-id="agrega${cardI}${card.formatosStocskPrecios[0][0]}">${card.formatosStocskPrecios[0][0]} - $ ${card.formatosStocskPrecios[0][2]}</button><br>
+                    <button class="boton" id="agrega${cardI}${card.formatosStocskPrecios[1][0]}" onclick="agregarAlCarrito('${card.isbn}', '${card.titulo}', '${card.formatosStocskPrecios[1][0]}', '${card.formatosStocskPrecios[1][2]}')" data-id="agrega${cardI}${card.formatosStocskPrecios[1][0]}">${card.formatosStocskPrecios[1][0]} - $ ${card.formatosStocskPrecios[1][2]}</button><br>
+                    <button class="boton" id="agrega${cardI}${card.formatosStocskPrecios[2][0]}" onclick="agregarAlCarrito('${card.isbn}', '${card.titulo}', '${card.formatosStocskPrecios[2][0]}', '${card.formatosStocskPrecios[2][2]}')" data-id="agrega${cardI}${card.formatosStocskPrecios[2][0]}">${card.formatosStocskPrecios[2][0]} - $ ${card.formatosStocskPrecios[2][2]}</button><br>
+                    <button class="boton" id="agrega${cardI}${card.formatosStocskPrecios[3][0]}" onclick="agregarAlCarrito('${card.isbn}', '${card.titulo}', '${card.formatosStocskPrecios[3][0]}', '${card.formatosStocskPrecios[3][2]}')" data-id="agrega${cardI}${card.formatosStocskPrecios[3][0]}">${card.formatosStocskPrecios[3][0]} - $ ${card.formatosStocskPrecios[3][2]}</button><br>
+                    <button class="boton" id="agrega${cardI}${card.formatosStocskPrecios[4][0]}" onclick="agregarAlCarrito('${card.isbn}', '${card.titulo}', '${card.formatosStocskPrecios[4][0]}', '${card.formatosStocskPrecios[4][2]}')" data-id="agrega${cardI}${card.formatosStocskPrecios[4][0]}">${card.formatosStocskPrecios[4][0]} - $ ${card.formatosStocskPrecios[4][2]}</button>
                     </div>
                 </div>
             </div>
         </div>
         `
+    cardI += 1;
 })
 
 document.getElementById("seccionCards").innerHTML = `
 <div class="container px-4 px-lg-5 mt-5">
+<img class="autorPic" src="img/${keyAutor.picture}.png" alt="..." />
+<div class="autor h5"> ${keyAutor.apellido}, ${keyAutor.nombre} </div>
+<br>
+
 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">` + cards + `
 </div></div>`;
 
@@ -90,7 +100,7 @@ fetch("https://type.fit/api/quotes")
     });
 
 /* Funcion para comparar si es el mismo libro y devuelve posición si lo es, -1 si no está */
-function esMismoLibro (isbn, titulo, formato, precio) {
+function esLibro(isbn, titulo, formato, precio) {
     for (let i = 0; i < carritoLibros.particulares.length; i++) {
         if (carritoLibros.particulares[i][0] == isbn) {
             if (carritoLibros.particulares[i][1] == titulo) {
@@ -110,27 +120,13 @@ function agregarAlCarrito (isbn, titulo, formato, precio) {
     carritoLibros.items += 1;
     carritoLibros.total += parseInt(precio);
     document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
-    if (esMismoLibro(isbn, titulo, formato, precio) != -1) {
-        carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4] += 1;
-        document.getElementById("artN" + esMismoLibro(isbn, titulo, formato, precio)).innerHTML = `
-        <div class="fw-bold">${titulo}</div>
-        ${formato} - $ ${precio}.- Cant: ${carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]} - Total:$ ${precio*carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]}
-        `;
+    if (esLibro(isbn, titulo, formato, precio) != -1) {
+        carritoLibros.particulares[esLibro(isbn, titulo, formato, precio)][4] += 1;
     } else {
         carritoLibros.particulares.push([isbn, titulo, formato, precio, 1]);
-        document.getElementById("contenidoCarrito").innerHTML += `
-        <li class="list-group-item d-flex justify-content-between align-items-start" id="${esMismoLibro(isbn, titulo, formato, precio)}">
-        <div class="ms-2 me-auto" id= artN${esMismoLibro(isbn, titulo, formato, precio)}>
-            <div class="fw-bold">${titulo}</div>
-            ${formato} - $ ${precio}.- Cant: ${carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]} - Total:$ ${precio*carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]}
-        </div>
-        <span class="badge bg-primary rounded-pill" id= pre${esMismoLibro(isbn, titulo, formato, precio)}>
-            <a id= del${esMismoLibro(isbn, titulo, formato, precio)} onclick='eliminarDelCarrito("${isbn}", "${titulo}", "${formato}", "${precio}")'>x</a>
-        </span>
-        </li>
-        `;
     }
     localStorage.setItem("carrito", JSON.stringify(carritoLibros));
+    armarCarrito();
     const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -144,39 +140,34 @@ function agregarAlCarrito (isbn, titulo, formato, precio) {
     })
     Toast.fire({
         icon: 'success',
-        title: "Has agregado "+ carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][1] +" en formato "+ carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][2] +" a tu carrito."
+        title: "Has agregado "+ carritoLibros.particulares[esLibro(isbn, titulo, formato, precio)][1] +" en formato "+ carritoLibros.particulares[esLibro(isbn, titulo, formato, precio)][2] +" a tu carrito."
     })
 }
 
 function eliminarDelCarrito(isbn, titulo, formato, precio) {
-    if (carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4] > 1) {
-        carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4] -= 1;
-        carritoLibros.items -= 1;
-        carritoLibros.total -= parseInt(carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][3]);
-        document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
-        document.getElementById("artN" + esMismoLibro(isbn, titulo, formato, precio)).innerHTML = `
-        <div class="fw-bold">${titulo}</div>
-        ${formato} - $ ${precio}.- Cant: ${carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]} - Total:$ ${precio*carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][4]}
-        `;
+    if (carritoLibros.particulares.length > 1) {
+        if (carritoLibros.particulares[esLibro(isbn, titulo, formato, precio)][4] > 1) {
+            carritoLibros.particulares[esLibro(isbn, titulo, formato, precio)][4] -= 1;
+            carritoLibros.items -= 1;
+            carritoLibros.total -= parseInt(carritoLibros.particulares[esLibro(isbn, titulo, formato, precio)][3]);
+        } else {
+            carritoLibros.items -= 1;
+            carritoLibros.total -= parseInt(carritoLibros.particulares[esLibro(isbn, titulo, formato, precio)][3]);
+            carritoLibros.particulares.splice(esLibro(isbn, titulo, formato, precio), 1);
+        }
     } else {
-        document.getElementById(esMismoLibro(isbn, titulo, formato, precio)).remove();
-        carritoLibros.items -= 1,
-        carritoLibros.total -= parseInt(carritoLibros.particulares[esMismoLibro(isbn, titulo, formato, precio)][3]),
-        carritoLibros.particulares.splice(esMismoLibro(isbn, titulo, formato, precio), 1),
-        document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
+        vaciarCarrito();
     }
     localStorage.setItem("carrito", JSON.stringify(carritoLibros));
+    armarCarrito();
 }      
 
 function vaciarCarrito() {
     document.getElementById("contenidoCarrito").innerHTML = "";
-    for (let i = 0; i < carritoLibros.particulares.length; i++) {
-        carritoLibros.items = 0;
-        carritoLibros.total = 0;
-        carritoLibros.particulares = [];
-        document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
-        localStorage.setItem("carrito", JSON.stringify(carritoLibros));
-    }
+    carritoLibros.items = 0;
+    carritoLibros.total = 0;
+    carritoLibros.particulares = [];
+    document.getElementById("tbCarritoCompras").innerHTML = carritoLibros.items + " - $ " + carritoLibros.total;
 }
 
 document.getElementById("continuarCompra").addEventListener("click", function() {
